@@ -1,4 +1,4 @@
-###Metagenomikai workflow és MAG-visszanyerés
+# Metagenomikai workflow és MAG-visszanyerés
 
 **1. A projekt háttere**
 
