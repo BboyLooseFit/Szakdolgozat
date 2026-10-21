@@ -1,25 +1,51 @@
-# Szakdolgozat
-Szakdolgozattal kapcsolatos információk, lépések leírása és a hozzájuk tartozó kódok.
+###Metagenomikai workflow és MAG-visszanyerés
 
-ELSŐ CÉLKITŰZÉS
-Egyetlen, ismert összetételű közösségből szimulált ONT-minta előállítása, majd assembly, binning és a visszanyert MAG-jelöltek minőségértékelése.
+**1. A projekt háttere**
 
-A szimulált közösségek egy Human Microbiome Project eredetű bélmikrobiom-template alapján készültek. Az azonos abundanciaeloszlás megőrzése mellett a közösség komplexitását a 10 legabundánsabb genom kiválasztásával módosítottuk.
+A szakdolgozat célja metagenomikai bioinformatikai munkafolyamatok vizsgálata és összehasonlítása szimulált, ismert összetételű mikrobiális közösségeken. A projekt során a szekvenciaadatok szimulálásától kezdve az assembly-n és binningen át a visszanyert metagenom-assembled genome-ok (MAG-ok) minőségértékeléséig követjük végig az elemzési folyamatot.
 
-A pilot szimulációhoz a gut/SRS104912 template került kiválasztásra, amely 720 referencia genomot tartalmaz.
+A szimuláció lehetővé teszi, hogy a visszanyert bin-eket a kiindulási közösség ismert referencia-genomjaihoz hasonlítsuk, és értékeljük a különböző bioinformatikai eszközök teljesítményét.
 
-ELSŐ WORKFLOW
-1. MeSS: 10 referencia-genom relatív abundanciák alapján, egy szimulált minta, rögzített seed=42.
-2. Szimulált adatok: kb. 1,0 Gb, 67 341 read, átlagos readhossz kb. 14,85 kb.
-3. Flye assembly: 168 kontig, összesen 37,94 Mb, N50 = 667 985 bp, GC = 44,65%.
-4. Read mapping: a readek kb. 99,56%-a leképeződött az assembly-re az elsődleges illesztések alapján.
-5. SemiBin2: 8 bin; 168 kontigból 150 került bin-be. A bin-ekhez rendelt kontigok az assembly bázisainak kb. 97,4%-át fedik.
-6. CheckM2: teljesség 71,74–100%; szennyezettség 0,50–10,01%.
-7. FastANI és QUAST: a bin-eket a szimulációban használt referencia-genomokhoz hasonlítottuk.
+**2. Célkitűzések**
 
+- ONT long-read szekvenciaadatok szimulálása ismert összetételű mikrobiális közösségből.
+- De novo assembly készítése a szimulált readekből.
+- A readek visszamappelése az assembly-re.
+- A kontigok binningje és MAG-jelöltek előállítása.
+- A visszanyert bin-ek teljességének és szennyezettségének értékelése.
+- A visszanyert genomok összehasonlítása az eredeti referencia-genomokkal.
+- További binningeszközök és paraméterkombinációk vizsgálata, majd eredményeik összehasonlítása.
 
-ELSŐ FŐ EREDMÉNYEK
-- A SemiBin_0–SemiBin_4 fő referencia-összehasonlításai magas, 97,2–99,9%-os genomfrakciót mutattak.
-- A SemiBin_5–SemiBin_7 töredezettebb bin-ek, alacsonyabb referencia-lefedettséggel és N50-értékekkel.
-- A 10 eredeti referencia mellett 8 bin keletkezett. Ezért nem állítható, hogy mind a 10 genom különálló MAG-ként sikeresen visszanyerésre került.
-- A GCF_013009555.1 és GCF_024760065.1 referenciák különálló MAG-ként történő visszanyerése nem igazolt. A teljes assembly QUAST-genomfrakciói rendre kb. 74,7% és 42,2%.
+**3. A pilot szimuláció**
+
+Kiindulási adatok
+
+A szimulációhoz a Human Microbiome Project (HMP) eredetű gut/SRS104912.tsv template-et használtuk, amely 720 referencia-genomot tartalmazott. A közösség komplexitásának csökkentésére a 10 legnagyobb abundanciájú genomot választottuk ki, majd a relatív abundanciaértékeket a kiválasztott részhalmazon belül normalizáltuk.
+
+A szimulált közösség azonosítója top10 volt.
+
+Főbb lépések
+
+1. MeSS – adatszimulálás: egy ONT long-read minta generálása rögzített, 42-es seed értékkel.
+2. Flye – de novo assembly: az eredeti readekből kontigok összeállítása.
+3. minimap2 és samtools – read mapping: a readek visszaillesztése az assembly-re, majd rendezett és indexelt BAM-fájl előállítása.
+4. SemiBin2 – binning: a kontigok csoportosítása a BAM-ból származó lefedettségi információ felhasználásával.
+5. CheckM2 – minőségellenőrzés: a bin-ek teljességének és szennyezettségének becslése.
+6. FastANI és QUAST – referencia-alapú értékelés: a visszanyert bin-ek összehasonlítása az eredeti referencia-genomokkal.
+7. Összesítés: a szimulációs metaadatok és a minőségi mutatók egyesítése egy tízsoros táblázatban.
+
+**4. A pilot workflow főbb eredményei**
+
+- Szimulált adatok: 67 341 read, összesen 1 000 000 962 bp szekvencia, átlagosan körülbelül 14,85 kb-os readhossz.
+- Flye assembly: 168 kontig, 37,94 Mb összhossz, 667 985 bp N50 és 44,65% GC-tartalom.
+- Read mapping: 67 047 elsődlegesen leképezett read, ami 99,56%-os aránynak felel meg.
+- SemiBin2: 8 bin; a 168 kontigból 150 került bin-be. A bin-ekbe rendelt kontigok az assembly bázisainak körülbelül 97,4%-át képviselték.
+- CheckM2: a teljességi értékek 71,74–100,00%, a szennyezettségi értékek 0,50–10,01% között alakultak.
+- FastANI és QUAST: a projekt-specifikus azonosíthatósági szabály alapján 8 referencia-genomhoz sikerült egyértelmű bin-jelöltet rendelni, míg 2 referencia különálló MAG-ként való visszanyerése nem volt igazolható.
+
+Az azonosíthatósági szabály kölcsönös legjobb FastANI-találatot, legalább 95%-os ANI-t és legalább 50%-os referenciafragmentum-illeszkedési arányt követelt meg. Ez a projektben használt döntési szabály, nem univerzális MAG-minőségi szabvány.
+
+A 8 azonosítható referencia nem jelenti automatikusan 8 teljes és hibamentes MAG visszanyerését. A teljességet, szennyezettséget és referencia-lefedettséget külön mutatókkal értékeltük.
+
+Az elemzési lépések részletes leírása a docs/ könyvtárban található.
+
