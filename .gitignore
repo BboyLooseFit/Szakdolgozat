@@ -1,0 +1,42 @@
+# Nyers szekvenciaadatok
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+
+# Illesztési fájlok
+*.sam
+*.bam
+*.bai
+
+# Referencia-genomok és assembly-k
+*.fna
+*.fna.gz
+*.fa
+*.fa.gz
+*.fasta
+*.fasta.gz
+
+# Nagy bioinformatikai adatbázisok
+*.dmnd
+
+# Generált nagy fájl- és eredménykönyvtárak
+results/one_sample/
+results/assembly/
+results/binning/
+results/qc/checkm2/
+results/qc/fastani/
+results/qc/quast/
+
+# Python ideiglenes fájlok
+__pycache__/
+*.py[cod]
+
+# Helyi Python-környezetek
+.venv/
+venv/
+env/
+
+# Szerkesztői és operációs rendszeres fájlok
+.DS_Store
+Thumbs.db
