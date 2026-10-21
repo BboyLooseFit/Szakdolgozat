@@ -4,7 +4,7 @@ This directory contains custom scripts developed for the thesis project.
 
 ## Current scripts
 
-### `build_10_reference_summary.py`
+### `build_10_reference_summary.py` 
 
 Generates a 10-reference summary table by combining:
 
