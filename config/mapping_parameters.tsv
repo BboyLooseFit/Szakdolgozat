@@ -1,0 +1,2 @@
+sample_id	input_reads	assembly_fasta	preset	sort_threads	output_dir
+top10	results/one_sample/fastq/top10.fq.gz	results/assembly/top10/flye/assembly.fasta	map-ont	4	results/assembly/top10/mapping
