@@ -1,0 +1,2 @@
+sample_id	assembly_fasta	bam_file	environment	sequencing_type	output_dir
+top10	results/assembly/top10/flye/assembly.fasta	results/assembly/top10/mapping/top10_vs_assembly.bam	human_gut	long_read	results/binning/top10/semibin2
