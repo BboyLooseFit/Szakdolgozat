@@ -1,0 +1,2 @@
+sample_id	input_reads	read_type	assembly_mode	read_error	threads	output_dir
+top10	results/one_sample/fastq/top10.fq.gz	nano-hq	meta	0.05	4	results/assembly/top10/flye
