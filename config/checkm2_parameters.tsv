@@ -1,0 +1,2 @@
+sample_id	environment	bins_dir	extension	database_path	threads	output_dir
+top10	checkm2	results/binning/top10/semibin2/output_bins	gz	~/szakdolgozat/checkm2-db/CheckM2_database/uniref100.KO.1.dmnd	1	results/qc/top10/checkm2
