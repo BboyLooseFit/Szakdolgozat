@@ -1,0 +1,2 @@
+sample_id	community_file	technology	model	mean_length_bp	accuracy	ratio	seed	save_bam	threads	output_dir
+top10	communities/top10_community.tsv	ont	QSHMM-ONT-HQ	15000	0.95	39:24:36	42	true	4	results/one_sample
