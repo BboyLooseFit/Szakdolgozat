@@ -1,0 +1,2 @@
+sample_id	environment	bins_dir	references_dir	forward_results	reverse_results	threads	minimum_ani	minimum_reference_fragment_fraction	output_dir
+top10	quast311	results/binning/top10/semibin2/output_bins	results/one_sample/assembly_finder/download	results/qc/fastani/bin_vs_reference.tsv	results/qc/fastani/reference_vs_bins.tsv	2	95	50	results/qc/top10/quast
