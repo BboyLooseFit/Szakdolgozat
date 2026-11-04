@@ -1,0 +1,2 @@
+sample_id	environment	bins_dir	bin_pattern	references_dir	reference_pattern	threads	minimum_ani	minimum_reference_fragment_fraction	output_dir
+top10	fastani	results/binning/top10/semibin2/output_bins	SemiBin_*.fa.gz	results/one_sample/assembly_finder/download	*.fna.gz	4	95	50	results/qc/top10/fastani
