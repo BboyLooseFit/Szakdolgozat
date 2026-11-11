@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 import csv
 import shlex
@@ -9,8 +7,15 @@ from pathlib import Path
 
 
 def read_parameters(config_file):
+    """Read CheckM2 parameters from a TSV file."""
+    if not config_file.is_file():
+        raise FileNotFoundError(
+            f"Configuration file not found: {config_file}"
+        )
+
     with config_file.open(newline="", encoding="utf-8") as handle:
-        rows = list(csv.DictReader(handle, delimiter="\t"))
+        reader = csv.DictReader(handle, delimiter="\t")
+        rows = list(reader)
 
     if not rows:
         raise ValueError("The CheckM2 parameter file is empty.")
@@ -19,12 +24,28 @@ def read_parameters(config_file):
 
 
 def resolve_path(value, data_root):
+    """Resolve absolute or data-root-relative paths."""
     path = Path(value).expanduser()
 
     if not path.is_absolute():
         path = data_root / path
 
     return path.resolve()
+
+
+def parse_bool(value, parameter_name):
+    """Convert a TSV boolean value to Python bool."""
+    value = str(value).strip().lower()
+
+    if value in {"true", "1", "yes", "y"}:
+        return True
+
+    if value in {"false", "0", "no", "n"}:
+        return False
+
+    raise ValueError(
+        f"Invalid boolean value for {parameter_name}: {value}"
+    )
 
 
 def main():
@@ -53,7 +74,7 @@ def main():
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[1]
-    config_file = repo_root / "config/checkm2_parameters.tsv"
+    config_file = repo_root / "config" / "checkm2_parameters.tsv"
     data_root = args.data_root.expanduser().resolve()
 
     if not data_root.is_dir():
@@ -80,18 +101,16 @@ def main():
     for row in rows:
         sample_id = row["sample_id"]
 
-        bins_dir = resolve_path(
-            row["bins_dir"], data_root
-        )
-        database = resolve_path(
-            row["database_path"], data_root
-        )
-        output_dir = resolve_path(
-            row["output_dir"], data_root
-        )
+        bins_dir = resolve_path(row["bins_dir"], data_root)
+        database = resolve_path(row["database_path"], data_root)
+        output_dir = resolve_path(row["output_dir"], data_root)
 
         extension = row["extension"].lstrip(".")
         threads = int(row["threads"])
+        lowmem = parse_bool(
+            row.get("lowmem", "false"),
+            "lowmem"
+        )
 
         if threads < 1:
             raise ValueError("threads must be at least 1.")
@@ -116,12 +135,17 @@ def main():
             "--extension", extension,
         ]
 
+        if lowmem:
+            command.append("--lowmem")
+
         print(f"\nSample: {sample_id}")
         print(f"Input bins: {bins_dir}")
         print(f"Input directory exists: {bins_dir.is_dir()}")
         print(f"Matching bin files: {len(bin_files)}")
         print(f"Database: {database}")
         print(f"Database exists: {database.is_file()}")
+        print(f"Low-memory mode: {lowmem}")
+        print(f"Threads: {threads}")
         print(f"Output: {output_dir}")
 
         if not args.execute:
@@ -153,7 +177,8 @@ def main():
 
         output_dir.parent.mkdir(parents=True, exist_ok=True)
 
-        print("Starting CheckM2...")
+        print("\nStarting CheckM2...")
+        print(shlex.join(command))
 
         subprocess.run(
             command,
@@ -163,13 +188,13 @@ def main():
 
         report = output_dir / "quality_report.tsv"
 
-        if not report.is_file():
+        if not report.is_file() or report.stat().st_size == 0:
             raise RuntimeError(
-                f"CheckM2 finished, but quality_report.tsv "
+                f"CheckM2 finished, but a valid quality_report.tsv "
                 f"was not found in {output_dir}"
             )
 
-        print(f"CheckM2 completed: {sample_id}")
+        print(f"\nCheckM2 completed: {sample_id}")
         print(f"Quality report: {report}")
 
     if not args.execute:
